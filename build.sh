@@ -1,11 +1,22 @@
 #!/bin/bash
-set -e
 
-if [ ! -f build/build.sh ]; then
 echo "Downloading toolkit"
-git clone --depth=1 https://github.com/phhusson/vendor_hardware_overlay.git
-( cd vendor_hardware_overlay && git checkout origin/pie build && mv build .. )
-fi
-
-echo "Building overlay APK"
-( cd build && ./build.sh ../BromiteWebView/Android.mk )
+mv .git .git.bak &> /dev/null
+git init &> /dev/null
+git remote add origin https://github.com/phhusson/vendor_hardware_overlay.git &> /dev/null
+git fetch --depth=1 &> /dev/null
+git checkout origin/pie build &> /dev/null
+rm -f -r .git
+mv .git.bak .git &> /dev/null
+build/build.sh
+echo "Building flashable package"
+mkdir build/.temp
+mkdir -p build/.temp/META-INF/com/google/android
+cp update-binary build/.temp/META-INF/com/google/android
+echo "# Dummy file; update-binary is a shell script." > build/.temp/META-INF/com/google/android/update-script
+mkdir -p build/.temp/system/addon.d
+cp 99-bromite-webview.sh build/.temp/system/addon.d
+mkdir -p build/.temp/vendor/overlay
+cp build/power.apk build/.temp/vendor/overlay
+( cd build/.temp && zip -r ../BromiteSystemWebViewOverlay.zip . ) &> /dev/null
+rm -r build/.temp
