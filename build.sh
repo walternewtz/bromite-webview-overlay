@@ -17,6 +17,6 @@ echo "# Dummy file; update-binary is a shell script." > build/.temp/META-INF/com
 mkdir -p build/.temp/system/addon.d
 cp 99-bromite-webview.sh build/.temp/system/addon.d
 mkdir -p build/.temp/vendor/overlay
-cp build/power.apk build/.temp/vendor/overlay
+cp build/treble-overlay-carrier-config.apk build/.temp/vendor/overlay
 ( cd build/.temp && zip -r ../BromiteSystemWebViewOverlay.zip . ) &> /dev/null
 rm -r build/.temp
